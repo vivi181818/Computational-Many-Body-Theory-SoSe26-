@@ -36,13 +36,13 @@ for Nk in Nk_values:
     # Preallocate temporary Green function array for current grid size
     G_loc = np.zeros(len(V_n), dtype=np.complex128)
     
-    # Utilize Symmetry: Calculate only for positive n_indices (n >= 0)
+    # Utilize Symmetry: Calculate only for positive n_indices 
     for idx, n in enumerate(range(n_max, 2 * n_max)):
         w_n = 1j * V_n[n]
         denominator = w_n - eps_k + mu
         G_loc[n] = np.sum(1.0 / denominator) / (Nk * Nk)
         
-    # Apply symmetry relations for negative frequencies: G(-i V_n) = G(i V_n)*
+    # Apply symmetry relations for negative frequencies
     for n in range(0, n_max):
         G_loc[n] = np.conj(G_loc[2*n_max - 1 - n])
 

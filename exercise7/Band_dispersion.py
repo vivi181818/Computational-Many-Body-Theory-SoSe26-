@@ -127,8 +127,14 @@ ax_2d.set_xlabel('$k_x / \pi$', fontsize=12)
 ax_2d.set_ylabel('$k_y / \pi$', fontsize=12)
 ax_2d.set_zlabel('Energy $E$', fontsize=12)
 ax_2d.set_title('2D Tight-Binding Energy Surface', fontsize=14)
-fig_2d.colorbar(surf, shrink=0.5, aspect=5, label='Energy')
 plt.show()
+
+
+
+
+
+
+
 
 
 

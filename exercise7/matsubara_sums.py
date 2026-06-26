@@ -7,22 +7,21 @@ a    = 1.0
 mu   = 0.0
 beta = 20.0
 
+# kpoint grid
 Nk = 200
 kx = np.linspace(-np.pi, np.pi, Nk)
 ky = np.linspace(-np.pi, np.pi, Nk)
 Kx, Ky = np.meshgrid(kx, ky)
 eps_k = -2.0 * t * (np.cos(Kx * a) + np.cos(Ky * a))
 
-# --- tau grid ---
+# tau grid
 N_tau    = 800
-tau_pos  = np.linspace(0, beta, N_tau)   # [0, beta]
+tau_pos  = np.linspace(0, beta, N_tau) 
 tau_eps  = 1e-4
 
 n_max_values = [50, 100, 250, 500]
 
-# ============================================================
-# Helper: compute G_loc(i*nu_n) for a given n_max
-# ============================================================
+# use symmetry to compute the Green function
 def compute_G_loc(n_max):
     n_indices = np.arange(-n_max, n_max)
     V_n  = (2 * n_indices + 1) * np.pi / beta
@@ -34,9 +33,7 @@ def compute_G_loc(n_max):
         G_loc[n] = np.conj(G_loc[2 * n_max - 1 - n])
     return V_n, G_loc
 
-# ============================================================
-# Helper: build G(tau) on [0, beta] and extend to [-beta, 0)
-# ============================================================
+
 def G_tau_from_Matsubara(V_n, G_loc, use_tail=False):
     tau_mesh = tau_pos[:, None]
     V_mesh   = V_n[None, :]
@@ -49,7 +46,6 @@ def G_tau_from_Matsubara(V_n, G_loc, use_tail=False):
     else:
         G_tau_pos    = (1.0 / beta) * np.sum(G_loc[None, :] * phase, axis=1)
 
-    # Extend to (-beta, 0) via anti-periodicity: G(tau - beta) = -G(tau)
     tau_neg  = tau_pos[1:] - beta    # shape N_tau-1, spans (-beta, 0)
     G_tau_neg = -G_tau_pos[1:]       # exact anti-periodic partners
 
@@ -58,9 +54,9 @@ def G_tau_from_Matsubara(V_n, G_loc, use_tail=False):
     idx      = np.argsort(tau_full)
     return tau_full[idx], np.real(G_full[idx]), np.real(G_tau_pos), np.real(G_tau_neg)
 
-# ============================================================
+
+
 # Figure 1 — Plain Fourier sum (no tail subtraction)
-# ============================================================
 fig, ax = plt.subplots(figsize=(12, 7))
 
 for n_max in n_max_values:
@@ -85,9 +81,8 @@ ax.legend()
 fig.tight_layout()
 
 
-# ============================================================
+
 # Figure 2 — Improved: tail subtraction
-# ============================================================
 fig, ax = plt.subplots(figsize=(12, 7))
 
 for n_max in n_max_values:
@@ -114,9 +109,9 @@ fig.tight_layout()
 
 plt.show()
 
-# ============================================================
-# Convergence check — both methods
-# ============================================================
+
+
+# Convergence check 
 print("\n--- Convergence Check at tau = 0+ ---")
 print(f"{'n_max':>8} | {'Plain sum G(0+)':>18} | {'Tail-sub G(0+)':>18}")
 print("-" * 52)
@@ -133,9 +128,9 @@ for n_max in n_max_values:
 n_sigma = 0.5
 print(f"\nTheoretical:  G(0+) = {-1 + n_sigma:.2f},  G(beta-) = {-n_sigma:.2f}")
 
-# ============================================================
+
+
 # Boundary conditions and anti-periodicity — plain sum
-# ============================================================
 V_n, G_loc = compute_G_loc(n_max_values[-1])
 tau_sorted, G_sorted, G_tau_pos, G_tau_neg = G_tau_from_Matsubara(V_n, G_loc, use_tail=False)
 
@@ -149,9 +144,8 @@ print(f"G(beta-) = {G_sorted[beta_minus_idx]:.6f}   (expected {-n_sigma:.2f})")
 anti_periodic = np.allclose(G_tau_neg, -G_tau_pos[1:], atol=1e-6)
 print(f"Anti-periodicity G(tau-beta) = -G(tau): {anti_periodic}")
 
-# ============================================================
 # Boundary conditions and anti-periodicity — improved version
-# ============================================================
+
 V_n, G_loc = compute_G_loc(n_max_values[-1])
 tau_sorted, G_sorted, G_tau_pos, G_tau_neg = G_tau_from_Matsubara(V_n, G_loc, use_tail=True)
 
@@ -165,20 +159,11 @@ print(f"G(beta-) = {G_sorted[beta_minus_idx]:.6f}   (expected {-n_sigma:.2f})")
 anti_periodic = np.allclose(G_tau_neg, -G_tau_pos[1:], atol=1e-6)
 print(f"Anti-periodicity G(tau-beta) = -G(tau): {anti_periodic}")
 
-# ============================================================
+
+
 # Self-consistent chemical potential
-# ============================================================
-# From G^0(0+) = -1 + n_sigma, with n_sigma = n_e / 2 (per spin):
-#   n_e = 2 * (1 + G(0+))
-#
-# Self-consistency: adjust mu until n_e_computed == N_e_target
-# Update rule (linear mixing):
-#   mu_new = (1 - alpha) * mu_old + alpha * mu_trial
-# where mu_trial is shifted by the electron density error.
-# ============================================================
 
 def compute_n_e(mu_val, n_max=500):
-    """Compute total electron density from G^0(0+) for a given mu."""
     n_indices = np.arange(-n_max, n_max)
     V_n  = (2 * n_indices + 1) * np.pi / beta
     G_loc = np.zeros(len(V_n), dtype=np.complex128)
@@ -199,12 +184,6 @@ def compute_n_e(mu_val, n_max=500):
 
 def self_consistent_mu(N_e_target, alpha=0.5, mu_init=0.0,
                         max_iter=200, tol=1e-6):
-    """
-    Find mu self-consistently using linear mixing.
-    alpha : mixing parameter (0 < alpha <= 1)
-            small alpha  -> slow convergence but stable
-            large alpha  -> fast convergence but may oscillate
-    """
     mu = mu_init
     for i in range(max_iter):
         n_e, _ = compute_n_e(mu)
