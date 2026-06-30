@@ -9,8 +9,8 @@ beta = 20.0
 
 # kpoint grid
 Nk = 200
-kx = np.linspace(-np.pi, np.pi, Nk)
-ky = np.linspace(-np.pi, np.pi, Nk)
+kx = -np.pi + 2*np.pi*np.arange(Nk)/Nk
+ky = -np.pi + 2*np.pi*np.arange(Nk)/Nk
 Kx, Ky = np.meshgrid(kx, ky)
 eps_k = -2.0 * t * (np.cos(Kx * a) + np.cos(Ky * a))
 
@@ -159,8 +159,6 @@ print(f"G(beta-) = {G_sorted[beta_minus_idx]:.6f}   (expected {-n_sigma:.2f})")
 anti_periodic = np.allclose(G_tau_neg, -G_tau_pos[1:], atol=1e-6)
 print(f"Anti-periodicity G(tau-beta) = -G(tau): {anti_periodic}")
 
-
-
 # Self-consistent chemical potential
 
 def compute_n_e(mu_val, n_max=500):
@@ -208,4 +206,3 @@ for alpha in [0.1, 0.5, 0.9]:
     mu_sc, n_e_sc, iters, conv = self_consistent_mu(
         N_e_target=1.0, alpha=alpha, mu_init=0.5, max_iter=200, tol=1e-5)
     print(f"{alpha:>8.1f} | {mu_sc:>12.6f} | {n_e_sc:>12.6f} | {iters:>8d} | {str(conv):>10}")
-
