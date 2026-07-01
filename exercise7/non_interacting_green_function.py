@@ -26,8 +26,8 @@ plt.figure(figsize=(12, 8))
 g_loc_converged = None
 
 for Nk in Nk_values:
-    kx = np.linspace(-np.pi, np.pi, Nk)
-    ky = np.linspace(-np.pi, np.pi, Nk)
+    kx = np.linspace(-np.pi, np.pi, Nk, endpoint=False)
+    ky = np.linspace(-np.pi, np.pi, Nk, endpoint=False)
     Kx, Ky = np.meshgrid(kx, ky)
     
     # 2D Tight-binding dispersion

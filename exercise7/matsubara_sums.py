@@ -16,7 +16,7 @@ eps_k = -2.0 * t * (np.cos(Kx * a) + np.cos(Ky * a))
 
 # tau grid
 N_tau    = 800
-tau_pos  = np.linspace(0, beta, N_tau) 
+tau_pos  = np.linspace(0, beta, N_tau, endpoint=False)
 tau_eps  = 1e-4
 
 n_max_values = [50, 100, 250, 500]

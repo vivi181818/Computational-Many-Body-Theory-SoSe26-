@@ -29,7 +29,7 @@ lat_vec_3d = np.array([
 ])
 
 #  1D DISPERSION PLOT
-k_vals_1d = np.linspace(-np.pi / a, np.pi / a, 300)
+k_vals_1d = np.linspace(-np.pi / a, np.pi / a, 300, endpoint=False)
 E_vals_1d = []
 for k in k_vals_1d:
     E_vals_1d.append(dispersion_energy_calc(np.array([k]), t, lat_vec_1d))
@@ -49,7 +49,7 @@ plt.show()
 
 
 #  2D BZ HEATMAP
-k_axis_2d = np.linspace(-np.pi / a, np.pi / a, 300)
+k_axis_2d = np.linspace(-np.pi / a, np.pi / a, 300, endpoint=False)
 kx, ky = np.meshgrid(k_axis_2d, k_axis_2d) #(300, 300)
 energy_2d = np.zeros_like(kx)
 
@@ -73,18 +73,18 @@ plt.show()
 N_pts = 100
 
 # Segment 1: Gamma to X (kx goes 0 to pi/a, ky = 0)
-kx_1 = np.linspace(0, np.pi / a, N_pts)
+kx_1 = np.linspace(0, np.pi / a, N_pts, endpoint=False)
 ky_1 = np.zeros(N_pts)
 path_g_x = np.array([[kx, ky] for kx, ky in zip(kx_1, ky_1)])
 
 # Segment 2: X to M (kx = pi/a, ky goes 0 to pi/a)
 kx_2 = np.full(N_pts, np.pi / a)
-ky_2 = np.linspace(0, np.pi / a, N_pts)
+ky_2 = np.linspace(0, np.pi / a, N_pts, endpoint=False)
 path_x_m = np.array([[kx, ky] for kx, ky in zip(kx_2, ky_2)])
 
 # Segment 3: M to Gamma (kx goes pi/a to 0, ky goes pi/a to 0)
-kx_3 = np.linspace(np.pi / a, 0, N_pts)
-ky_3 = np.linspace(np.pi / a, 0, N_pts)
+kx_3 = np.linspace(np.pi / a, 0, N_pts, endpoint=False)
+ky_3 = np.linspace(np.pi / a, 0, N_pts, endpoint=False)
 path_m_g = np.array([[kx, ky] for kx, ky in zip(kx_3, ky_3)])
 
 # Combine path segments (skipping overlapping points at boundaries)
@@ -150,7 +150,7 @@ plt.show()
 N_pts = 100
 
 # Gamma -> X
-kx_1 = np.linspace(0, np.pi/a, N_pts)
+kx_1 = np.linspace(0, np.pi/a, N_pts, endpoint=False)
 ky_1 = np.zeros(N_pts)
 kz_1 = np.zeros(N_pts)
 path_g_x = np.array([[kx, ky, kz]
@@ -158,7 +158,7 @@ path_g_x = np.array([[kx, ky, kz]
 
 # X -> M
 kx_2 = np.full(N_pts, np.pi/a)
-ky_2 = np.linspace(0, np.pi/a, N_pts)
+ky_2 = np.linspace(0, np.pi/a, N_pts, endpoint=False)
 kz_2 = np.zeros(N_pts)
 path_x_m = np.array([[kx, ky, kz]
                      for kx, ky, kz in zip(kx_2, ky_2, kz_2)])
@@ -166,14 +166,14 @@ path_x_m = np.array([[kx, ky, kz]
 # M -> R
 kx_3 = np.full(N_pts, np.pi/a)
 ky_3 = np.full(N_pts, np.pi/a)
-kz_3 = np.linspace(0, np.pi/a, N_pts)
+kz_3 = np.linspace(0, np.pi/a, N_pts, endpoint=False)
 path_m_r = np.array([[kx, ky, kz]
                      for kx, ky, kz in zip(kx_3, ky_3, kz_3)])
 
 # R -> Gamma
-kx_4 = np.linspace(np.pi/a, 0, N_pts)
-ky_4 = np.linspace(np.pi/a, 0, N_pts)
-kz_4 = np.linspace(np.pi/a, 0, N_pts)
+kx_4 = np.linspace(np.pi/a, 0, N_pts, endpoint=False)
+ky_4 = np.linspace(np.pi/a, 0, N_pts, endpoint=False)
+kz_4 = np.linspace(np.pi/a, 0, N_pts, endpoint=False)
 path_r_g = np.array([[kx, ky, kz]
                      for kx, ky, kz in zip(kx_4, ky_4, kz_4)])
 
@@ -241,7 +241,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # k-space grid (IMPORTANT: increase for smoother surface)
 N = 50  # 40–80 recommended depending on speed
 
-k_axis = np.linspace(-np.pi/a, np.pi/a, N)
+k_axis = np.linspace(-np.pi/a, np.pi/a, N, endpoint=False)
 kx, ky, kz = np.meshgrid(k_axis, k_axis, k_axis, indexing='ij')
 
 energy_3d_grid = np.zeros_like(kx)
